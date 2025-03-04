@@ -1,12 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Enable static optimization where possible
+  reactStrictMode: true,
+  swcMinify: true,
+  
+  // Configure image domains
   images: {
     remotePatterns: [
       {
         protocol: "https",
         hostname: "placehold.co",
-        port: "",
-        pathname: "/**",
       },
       {
         protocol: "https",
@@ -24,14 +27,9 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
-  async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: "https://api.openai.com/:path*",
-      },
-    ];
-  },
+
+  // Remove OpenAI rewrite as we're using the Vercel AI SDK
+  // which handles this for us
 };
 
 export default nextConfig;
