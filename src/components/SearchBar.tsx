@@ -1,20 +1,82 @@
 'use client';
 
-import React from 'react';
-import { Search } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Search, Loader2 } from 'lucide-react';
 import { useNutritionStore } from '@/lib/store';
+import { useDebounce } from '@/app/lib/hooks/useDebounce';
+import { APIDish, Dish, OilType, PreparationStyle, FryingLevel } from '@/lib/types';
 
 export function SearchBar() {
   const { 
     searchQuery,
     setSearchQuery,
     filteredDishes,
-    setSelectedDish
+    setSelectedDish,
+    setFilteredDishes
   } = useNutritionStore();
 
-  const handleDishSelect = (dish: any) => {
-    setSelectedDish(dish);
-    // Clear the search query after a short delay to allow the selection to be visible
+  const [isLoading, setIsLoading] = useState(false);
+  const debouncedQuery = useDebounce(searchQuery, 150);
+
+  useEffect(() => {
+    const searchFood = async () => {
+      if (!debouncedQuery.trim()) {
+        setFilteredDishes([]);
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/api/search?value=${encodeURIComponent(debouncedQuery)}`);
+        if (!response.ok) throw new Error('Search failed');
+        
+        const data = await response.json();
+        setFilteredDishes(data.items || []);
+      } catch (err) {
+        console.error('Search error:', err);
+        setFilteredDishes([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    searchFood();
+  }, [debouncedQuery, setFilteredDishes]);
+
+  const handleDishSelect = (dish: APIDish) => {
+    // Convert API dish to our internal Dish type
+    const internalDish: Dish = {
+      id: dish.food_unique_id,
+      name: dish.food_name,
+      description: dish.common_names,
+      alternateNames: [],
+      category: [],
+      region: 'Indian',
+      baseNutrition: {
+        calories: dish.nutrients.calories,
+        protein: dish.nutrients.protein,
+        carbs: dish.nutrients.carbs,
+        fat: dish.nutrients.fats,
+        fiber: 0,
+        sugar: 0
+      },
+      servingSize: {
+        amount: dish.calories_calculated_for,
+        unit: dish.serving_type
+      },
+      defaultPreparation: {
+        oilType: 'Regular Oil' as OilType,
+        oilAmount: 10,
+        creamContent: 0,
+        preparationStyle: 'Homemade' as PreparationStyle,
+        sugarContent: 0,
+        fryingLevel: 'Not Fried' as FryingLevel,
+        overallHealthiness: 3
+      }
+    };
+    
+    setSelectedDish(internalDish);
     setTimeout(() => {
       setSearchQuery('');
     }, 100);
@@ -34,29 +96,26 @@ export function SearchBar() {
       </div>
 
       {/* Autocomplete dropdown */}
-      {searchQuery && filteredDishes.length > 0 && (
+      {searchQuery && (filteredDishes.length > 0 || isLoading) && (
         <div className="absolute z-10 w-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 max-h-96 overflow-y-auto">
-          {filteredDishes.map((dish) => (
-            <button
-              key={dish.id}
-              onClick={() => handleDishSelect(dish)}
-              className="w-full px-4 py-2 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none transition-colors"
-            >
-              <div className="flex items-center space-x-3">
-                {dish.image && (
-                  <img
-                    src={dish.image}
-                    alt={dish.name}
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                )}
-                <div>
-                  <p className="font-medium text-gray-900">{dish.name}</p>
-                  <p className="text-sm text-gray-500">{dish.category.join(' • ')}</p>
+          {isLoading ? (
+            <div className="px-4 py-2 text-sm text-gray-500 flex items-center justify-center">
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              Searching...
+            </div>
+          ) : (
+            (filteredDishes as unknown as APIDish[]).map((dish) => (
+              <button
+                key={dish.food_unique_id}
+                onClick={() => handleDishSelect(dish)}
+                className="w-full px-4 py-2 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none transition-colors"
+              >
+                <div className="flex items-center">
+                  <p className="font-medium text-gray-900">{dish.food_name}</p>
                 </div>
-              </div>
-            </button>
-          ))}
+              </button>
+            ))
+          )}
         </div>
       )}
     </div>
