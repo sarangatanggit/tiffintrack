@@ -12,7 +12,7 @@ interface NutritionStore {
   setSelectedDish: (dish: Dish | null) => void;
   
   // Preparation Parameters
-  preparationParams: PreparationParameters | null;
+  preparationParams: PreparationParameters;
   setPreparationParams: (params: PreparationParameters) => void;
   updatePreparationParam: <K extends keyof PreparationParameters>(
     key: K,
@@ -21,6 +21,7 @@ interface NutritionStore {
   
   // Filtered Dishes
   filteredDishes: Dish[];
+  setFilteredDishes: (dishes: Dish[]) => void;
 }
 
 export const useNutritionStore = create<NutritionStore>((set, get) => ({
@@ -36,37 +37,47 @@ export const useNutritionStore = create<NutritionStore>((set, get) => ({
   selectedDish: null,
   setSelectedDish: (dish: Dish | null) => {
     if (dish) {
+      const currentParams = get().preparationParams;
       set({
         selectedDish: dish,
-        preparationParams: dish.defaultPreparation,
+        preparationParams: {
+          ...dish.defaultPreparation,
+          ...currentParams, // Preserve any user-modified parameters
+        },
         searchQuery: dish.name,
       });
     } else {
       set({
         selectedDish: null,
-        preparationParams: null,
+        // Don't clear preparationParams when dish is deselected
       });
     }
   },
   
   // Preparation Parameters
-  preparationParams: null,
+  preparationParams: {
+    servingSize: 1,
+    oilType: 'Ghee',
+    oilAmount: 'Normal',
+    creamContent: 'Normal',
+    cookingMethod: 'No Fry',
+    overallHealthiness: 3
+  },
   setPreparationParams: (params: PreparationParameters) => set({ preparationParams: params }),
   updatePreparationParam: <K extends keyof PreparationParameters>(
     key: K,
     value: PreparationParameters[K]
   ) => {
     const currentParams = get().preparationParams;
-    if (currentParams) {
-      set({
-        preparationParams: {
-          ...currentParams,
-          [key]: value,
-        },
-      });
-    }
+    set({
+      preparationParams: {
+        ...currentParams,
+        [key]: value,
+      },
+    });
   },
   
-  // Filtered Dishes - temporarily using empty array
+  // Filtered Dishes
   filteredDishes: [],
+  setFilteredDishes: (dishes: Dish[]) => set({ filteredDishes: dishes }),
 })); 

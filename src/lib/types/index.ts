@@ -7,23 +7,37 @@ export interface Nutrition {
   sugar: number;
 }
 
-export interface ServingSize {
-  amount: number;
-  unit: string;
-}
-
-export type OilType = 'Regular Oil' | 'Ghee' | 'Finishing Oil';
-export type PreparationStyle = 'Homemade' | 'Restaurant Style';
-export type FryingLevel = 'Not Fried' | 'Pan Fried' | 'Deep Fried';
+export type OilType = 'Ghee' | 'Coconut Oil' | 'Olive Oil';
+export type OilAmount = 'Little' | 'Normal' | 'Extra';
+export type CreamContent = 'None' | 'Little' | 'Normal' | 'Extra';
+export type CookingMethod = 'No Fry' | 'Pan Fry or Sauteed' | 'Deep Fried' | 'Baked' | 'Air Fried';
+export type ServingSize = 0.5 | 1 | 1.5 | 2;
 
 export interface PreparationParameters {
+  servingSize: ServingSize;
   oilType: OilType;
-  oilAmount: number;
-  creamContent: number;
-  preparationStyle: PreparationStyle;
-  sugarContent: number;
-  fryingLevel: FryingLevel;
+  oilAmount: OilAmount;
+  creamContent: CreamContent;
+  cookingMethod: CookingMethod;
   overallHealthiness: number;
+}
+
+export interface APINutrients {
+  fats: number;
+  carbs: number;
+  protein: number;
+  calories: number;
+}
+
+export interface APIDish {
+  food_name: string;
+  common_names: string;
+  food_unique_id: string;
+  food_id: number;
+  serving_type: string;
+  calories_calculated_for: number;
+  basic_unit_measure: number;
+  nutrients: APINutrients;
 }
 
 export interface Dish {
@@ -34,7 +48,10 @@ export interface Dish {
   category: string[];
   region: string;
   baseNutrition: Nutrition;
-  servingSize: ServingSize;
+  servingSize: {
+    amount: number;
+    unit: string;
+  };
   defaultPreparation: PreparationParameters;
   image?: string;
 }

@@ -1,8 +1,13 @@
+'use client';
+
+import { useState } from 'react';
 import { SearchBar } from '@/components/SearchBar';
 import { PreparationParameters } from '@/components/PreparationParameters';
 import { NutritionInformation } from '@/components/NutritionInformation';
 
 export default function Home() {
+  const [selectedFood, setSelectedFood] = useState<any>(null);
+
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -17,7 +22,7 @@ export default function Home() {
         </div>
 
         <div className="mb-8">
-          <SearchBar />
+          <SearchBar onSelect={setSelectedFood} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -25,7 +30,7 @@ export default function Home() {
             <PreparationParameters />
           </div>
           <div>
-            <NutritionInformation />
+            <NutritionInformation data={selectedFood} />
           </div>
         </div>
       </div>
