@@ -4,9 +4,13 @@ import React, { useEffect, useState } from 'react';
 import { Search, Loader2 } from 'lucide-react';
 import { useNutritionStore } from '@/lib/store';
 import { useDebounce } from '@/app/lib/hooks/useDebounce';
-import { APIDish, Dish, OilType, PreparationStyle, FryingLevel } from '@/lib/types';
+import { APIDish, Dish, OilType, OilAmount, CreamContent, CookingMethod } from '@/lib/types';
 
-export function SearchBar() {
+interface SearchBarProps {
+  onSelect: (dish: Dish) => void;
+}
+
+export function SearchBar({ onSelect }: SearchBarProps) {
   const { 
     searchQuery,
     setSearchQuery,
@@ -66,17 +70,17 @@ export function SearchBar() {
         unit: dish.serving_type
       },
       defaultPreparation: {
-        oilType: 'Regular Oil' as OilType,
-        oilAmount: 10,
-        creamContent: 0,
-        preparationStyle: 'Homemade' as PreparationStyle,
-        sugarContent: 0,
-        fryingLevel: 'Not Fried' as FryingLevel,
+        oilType: 'Ghee' as OilType,
+        oilAmount: 'Normal' as OilAmount,
+        creamContent: 'None' as CreamContent,
+        cookingMethod: 'No Fry' as CookingMethod,
+        servingSize: 1,
         overallHealthiness: 3
       }
     };
     
     setSelectedDish(internalDish);
+    onSelect(internalDish);
     setTimeout(() => {
       setSearchQuery('');
     }, 100);

@@ -3,12 +3,17 @@
 import React from 'react';
 import { useNutritionStore } from '@/lib/store';
 import { calculateNutrition } from '@/lib/utils/nutritionCalculator';
+import { Dish } from '@/lib/types';
 
-export function NutritionInformation() {
-  const { selectedDish, preparationParams } = useNutritionStore();
+interface NutritionInformationProps {
+  data: Dish | null;
+}
+
+export function NutritionInformation({ data }: NutritionInformationProps) {
+  const { preparationParams } = useNutritionStore();
   
-  const nutrition = selectedDish 
-    ? calculateNutrition(selectedDish, preparationParams)
+  const nutrition = data 
+    ? calculateNutrition(data, preparationParams)
     : null;
 
   return (
@@ -17,27 +22,27 @@ export function NutritionInformation() {
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-2xl font-semibold text-gray-900">
-              {selectedDish ? selectedDish.name : 'Select a Dish'}
+              {data ? data.name : 'Select a Dish'}
             </h2>
             <p className="mt-1 text-gray-500">
-              {selectedDish ? selectedDish.description : 'Choose a dish to view its details'}
+              {data ? data.description : 'Choose a dish to view its details'}
             </p>
             <div className="mt-2 flex items-center space-x-2 text-sm text-gray-500">
               <span>
-                {selectedDish 
-                  ? selectedDish.category.join(' • ')
+                {data 
+                  ? data.category.join(' • ')
                   : 'Category'}
               </span>
               <span>•</span>
               <span>
-                {selectedDish ? selectedDish.region : 'Region'}
+                {data ? data.region : 'Region'}
               </span>
             </div>
           </div>
-          {selectedDish?.image && (
+          {data?.image && (
             <img
-              src={selectedDish.image}
-              alt={selectedDish.name}
+              src={data.image}
+              alt={data.name}
               className="w-24 h-24 rounded-lg object-cover"
             />
           )}
@@ -46,7 +51,7 @@ export function NutritionInformation() {
         <div className="mt-6">
           <h3 className="text-lg font-medium text-gray-900">Nutrition Information</h3>
           <p className="text-sm text-gray-500">
-            Per serving ({selectedDish ? `${selectedDish.servingSize.amount}${selectedDish.servingSize.unit}` : '--'})
+            Per serving ({data ? `${data.servingSize.amount}${data.servingSize.unit}` : '--'})
           </p>
 
           <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
