@@ -13,6 +13,9 @@ export type CreamContent = 'None' | 'Little' | 'Normal' | 'Extra';
 export type CookingMethod = 'No Fry' | 'Pan Fry or Sauteed' | 'Deep Fried' | 'Baked' | 'Air Fried';
 export type ServingSize = 0.5 | 1 | 1.5 | 2;
 
+export type PreparationStyle = 'Basic' | 'Traditional' | 'Modern' | 'Fusion';
+export type FryingLevel = 'Light' | 'Medium' | 'Deep';
+
 export interface PreparationParameters {
   servingSize: ServingSize;
   oilType: OilType;
