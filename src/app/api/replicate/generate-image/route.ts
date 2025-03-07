@@ -1,11 +1,19 @@
 import { NextResponse } from "next/server";
-import Replicate from "replicate";
+// import Replicate from "replicate";
 
-const replicate = new Replicate({
-  auth: process.env.REPLICATE_API_TOKEN,
-});
+// const replicate = new Replicate({
+//   auth: process.env.REPLICATE_API_TOKEN,
+// });
 
 export async function POST(request: Request) {
+  // Placeholder response since Replicate integration is disabled
+  return NextResponse.json({ 
+    message: "Replicate image generation is currently disabled",
+    status: "disabled"
+  });
+
+  // Original implementation commented out
+  /*
   if (!process.env.REPLICATE_API_TOKEN) {
     throw new Error(
       "The REPLICATE_API_TOKEN environment variable is not set. See README.md for instructions on how to set it."
@@ -34,4 +42,5 @@ export async function POST(request: Request) {
     console.error("Error from Replicate API:", error);
     return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
+  */
 }
