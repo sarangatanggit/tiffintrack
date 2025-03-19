@@ -5,6 +5,10 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
 
 export function EnvChecker() {
+  // Simply return null to hide the component entirely
+  return null
+
+  /* Original implementation preserved below for reference
   const [missingVars, setMissingVars] = useState<string[]>([])
 
   useEffect(() => {
@@ -33,4 +37,5 @@ export function EnvChecker() {
       </AlertDescription>
     </Alert>
   )
+  */
 }
