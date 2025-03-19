@@ -11,17 +11,10 @@ export function EnvChecker() {
     const requiredVars = ["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY"]
 
     const missing = requiredVars.filter((varName) => {
-      // Check if the variable is defined and not empty
-      return !process.env[varName] || process.env[varName] === ""
+      return !process.env[varName]
     })
 
     setMissingVars(missing)
-    
-    // For debugging only - remove in production
-    console.log("Environment variables check:", {
-      NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL ? "Defined" : "Missing",
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? "Defined" : "Missing",
-    })
   }, [])
 
   if (missingVars.length === 0) return null
